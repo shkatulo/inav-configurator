@@ -1122,12 +1122,6 @@ var FC = {
                 hasOperand: [true, true],
                 output: "raw"
             },
-            90: {
-                name: "Calculate Heading",
-                operandType: "Maths",
-                hasOperand: [true, true],
-                output: "raw"
-            },
             36: {
                 name: "Map Input",
                 operandType: "Maths",
@@ -1213,6 +1207,13 @@ var FC = {
                 hasOperand: [true, true],
                 output: "boolean"
             },
+            // custom
+            90: {
+                name: "Calculate Heading",
+                operandType: "Maths",
+                hasOperand: [true, true],
+                output: "raw"
+            },
         }
     },
     getOperandTypes: function () {
@@ -1249,8 +1250,6 @@ var FC = {
                     10: "3D speed [cm/s]",
                     11: "Air speed [cm/s]",
                     12: "Altitude [cm]",
-                    90: "Latitude [cm]",
-                    91: "Longitude [cm]",
                     13: "Vertical speed [cm/s]",
                     14: "Throttle position [%]",
                     15: "Roll [deg]",
@@ -1276,6 +1275,11 @@ var FC = {
                     35: "AGL status [0/1]",
                     36: "AGL [cm]",
                     37: "Rangefinder [cm]",
+                    // ... v7
+                    40: "Yaw [deg]",
+                    // custom
+                    90: "Latitude [cm]",
+                    91: "Longitude [cm]",
                 }
             },
             3: {
