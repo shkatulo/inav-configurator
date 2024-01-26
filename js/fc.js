@@ -1122,6 +1122,12 @@ var FC = {
                 hasOperand: [true, true],
                 output: "raw"
             },
+            90: {
+                name: "Calculate Heading",
+                operandType: "Maths",
+                hasOperand: [true, true],
+                output: "raw"
+            },
             36: {
                 name: "Map Input",
                 operandType: "Maths",
@@ -1243,6 +1249,8 @@ var FC = {
                     10: "3D speed [cm/s]",
                     11: "Air speed [cm/s]",
                     12: "Altitude [cm]",
+                    90: "Latitude [cm]",
+                    91: "Longitude [cm]",
                     13: "Vertical speed [cm/s]",
                     14: "Throttle position [%]",
                     15: "Roll [deg]",
