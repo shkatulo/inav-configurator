@@ -1236,7 +1236,15 @@ var FC = {
                 operandType: "Set Flight Parameter",
                 hasOperand: [true, false],
                 output: "raw"
-            },        
+            },
+
+            // custom
+            90: {
+                name: "Calculate Heading",
+                operandType: "Maths",
+                hasOperand: [true, true],
+                output: "raw"
+            },
         }
     },
     getOperandTypes: function () {
@@ -1300,7 +1308,11 @@ var FC = {
                     37: "Rangefinder [cm]",
                     38: "Active MixerProfile",
                     39: "MixerTransition Active",
-                    40: "Yaw [deg]"
+                    40: "Yaw [deg]",
+
+                    // custom
+                    90: "Latitude [cm]",
+                    91: "Longitude [cm]",
                 }
             },
             3: {
