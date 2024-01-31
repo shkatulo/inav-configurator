@@ -1245,6 +1245,18 @@ var FC = {
                 hasOperand: [true, true],
                 output: "raw"
             },
+            91: {
+                name: "Set Faisafe Hold Command",
+                operandType: "Set Flight Parameter",
+                hasOperand: [true, true],
+                output: "boolean"
+            },
+            92: {
+                name: "Set AltHold Climb Rate",
+                operandType: "Set Flight Parameter",
+                hasOperand: [true, true],
+                output: "boolean"
+            },
         }
     },
     getOperandTypes: function () {
@@ -1313,6 +1325,7 @@ var FC = {
                     // custom
                     90: "Latitude [cm]",
                     91: "Longitude [cm]",
+                    92: "Failsafe Hold Throttle",
                 }
             },
             3: {
