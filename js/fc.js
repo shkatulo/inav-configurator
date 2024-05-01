@@ -1257,6 +1257,24 @@ var FC = {
                 hasOperand: [true, true],
                 output: "boolean"
             },
+            93: {
+                name: "Basic: Absolute",
+                operandType: "Maths",
+                hasOperand: [true, false],
+                output: "raw"
+            },
+            94: {
+                name: "Basic: Normalize A (to 1m)",
+                operandType: "Maths",
+                hasOperand: [true, true],
+                output: "raw"
+            },
+            95: {
+                name: "Basic: Normalize B (to 1m)",
+                operandType: "Maths",
+                hasOperand: [true, true],
+                output: "raw"
+            },
         }
     },
     getOperandTypes: function () {

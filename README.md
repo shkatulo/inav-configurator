@@ -119,6 +119,9 @@ for the Windows app. If you don't have Wine installed, you can create a release 
 
 To build a specific release, use the command `release --platform="win64"` for example.
 
+Working Mac example:
+`node ./node_modules/gulp/bin/gulp.js release --platform="osx64"`
+
 ### Running with debug | Inspector
 
 To be able to open Inspector, you will need SDK flavours of NW.js
