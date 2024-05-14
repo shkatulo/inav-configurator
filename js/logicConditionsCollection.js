@@ -6,7 +6,7 @@ let LogicConditionsCollection = function () {
         data = [],
         $container;
 
-    let max_logicConditions = 64;
+    let max_logicConditions = 128;
 
     self.getMaxLogicConditionCount = function () {
         return max_logicConditions;

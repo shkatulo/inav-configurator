@@ -2445,8 +2445,13 @@ var mspHelper = (function (gui) {
 
             function nextLogicCondition() {
                 idx++;
+
+                function onTimeout() {
+                    if (idx === 64) callback();
+                }
+
                 if (idx < LOGIC_CONDITIONS.getMaxLogicConditionCount() - 1) {
-                    MSP.send_message(MSPCodes.MSP2_INAV_LOGIC_CONDITIONS_SINGLE, [idx], false, nextLogicCondition);
+                    MSP.send_message(MSPCodes.MSP2_INAV_LOGIC_CONDITIONS_SINGLE, [idx], false, nextLogicCondition, undefined, onTimeout);
                 } else {
                     MSP.send_message(MSPCodes.MSP2_INAV_LOGIC_CONDITIONS_SINGLE, [idx], false, callback);
                 }

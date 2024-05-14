@@ -237,6 +237,7 @@ var MSP = {
             // message received, process
             mspHelper.processData(this);
         } else {
+            GUI.log('CRC failed');
             console.log('code: ' + this.code + ' - crc failed');
             this.packet_error++;
             $('span.packet-error').html(this.packet_error);
@@ -273,13 +274,18 @@ var MSP = {
         }
     },
 
-    send_message: function (code, data, callback_sent, callback_msp, protocolVersion) {
+    send_message: function (code, data, callback_sent, callback_msp, protocolVersion, callback_timeout) {
         var payloadLength = data && data.length ? data.length : 0;
         var length;
         var buffer;
         var view;
         var checksum;
         var ii;
+
+        var timer;
+        if (callback_timeout) {
+            timer = setTimeout(callback_timeout, 2000);
+        }
 
         if (!protocolVersion) {
             protocolVersion = this.protocolVersion;
@@ -333,7 +339,12 @@ var MSP = {
         var message = new MspMessageClass();
         message.code = code;
         message.messageBody = buffer;
-        message.onFinish = callback_msp;
+        message.onFinish = callback_timeout ?
+            (param) => {
+                clearTimeout(timer);
+                callback_msp(param);
+            } :
+            callback_msp;
         message.onSend = callback_sent;
 
         /*
