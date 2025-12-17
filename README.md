@@ -99,7 +99,7 @@ On some Linux distros, you may be missing `libatomic` and/or `NW.JS` (especially
 For local development, the **node.js** build system is used.
 
 1. Install node.js
-1. From the project folder run `npm install`
+1. From the project folder run `npm install` (or `npm_config_nwjs_process_arch=x64 npm install`, if error happens)
 1. To build the JS and CSS files and start the configurator:
     - With NW.js: Run `npm start`.
     - With Chrome: Run `npm run gulp`. Then open `chrome://extensions`, enable
