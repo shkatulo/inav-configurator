@@ -433,13 +433,18 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
             rules = currentMixerPreset.motorMixer;
         }
 
+        if (currentMixerPreset.image != 'quad_x') {
+            for (i = 1; i < 5; i++) {
+                $("#motorNumber"+i).css("visibility", "hidden");
+            }
+        }
+
         for (const i in rules) {
             if (rules.hasOwnProperty(i)) {
                 const rule = rules[i];
                 index++;
 
                 if (currentMixerPreset.image != 'quad_x') {
-                    $("#motorNumber"+index).css("visibility", "hidden");
                     continue;
                 }
 
@@ -641,25 +646,17 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
         });
 
         const updateMotorDirection = function () {
-            let motorDirectionCheckbox = $("#motor_direction_inverted");
-            const isReversed = motorDirectionCheckbox.is(":checked") && (MIXER_CONFIG.platformType == PLATFORM_MULTIROTOR || MIXER_CONFIG.platformType == PLATFORM_TRICOPTER);
+            let motorDirectionCheckbox = $('input[name=motor_direction_inverted]:checked');
+            const isReversed = motorDirectionCheckbox.val() == 1 && (MIXER_CONFIG.platformType == PLATFORM_MULTIROTOR || MIXER_CONFIG.platformType == PLATFORM_TRICOPTER);
 
             const path = './resources/motor_order/'
                 + currentMixerPreset.image + (isReversed ? "_reverse" : "") + '.svg';
             $('.mixerPreview img').attr('src', path);
 
-            if (MIXER_CONFIG.platformType == PLATFORM_MULTIROTOR || MIXER_CONFIG.platformType == PLATFORM_TRICOPTER) {
-                if (isReversed) {
-                    motorDirectionCheckbox.parent().find("label span").html(chrome.i18n.getMessage("motor_direction_isInverted"));
-                } else {
-                    motorDirectionCheckbox.parent().find("label span").html(chrome.i18n.getMessage("motor_direction_inverted"));
-                }
-            }
-
             renderServoOutputImage();
         };
 
-        $("#motor_direction_inverted").change(updateMotorDirection);
+        $("input[name=motor_direction_inverted]").change(updateMotorDirection);
 
         $platformSelect.find("*").remove();
 

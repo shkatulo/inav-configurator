@@ -3,6 +3,7 @@
 
 var helper = helper || {};
 var savingDefaultsModal;
+var processingDefaults = false;
 
 helper.defaultsDialog = (function () {
 
@@ -787,7 +788,7 @@ helper.defaultsDialog = (function () {
             },
             {
                 key: "nav_wp_radius",
-                value: 5000
+                value: 800
             },
             {
                 key: "nav_wp_max_safe_distance",
@@ -996,7 +997,7 @@ helper.defaultsDialog = (function () {
             },
             {
                 key: "nav_wp_radius",
-                value: 5000
+                value: 1000
             },
             {
                 key: "nav_wp_max_safe_distance",
@@ -1130,6 +1131,7 @@ helper.defaultsDialog = (function () {
     };
 
     privateScope.finalize = function (selectedDefaultPreset) {
+        processingDefaults = false;
         mspHelper.saveToEeprom(function () {
             //noinspection JSUnresolvedVariable
             GUI.log(chrome.i18n.getMessage('configurationEepromSaved'));
@@ -1149,7 +1151,7 @@ helper.defaultsDialog = (function () {
         });
     };
 
-    privateScope.setSettings = function (selectedDefaultPreset) {
+    privateScope.setSettings = async function (selectedDefaultPreset) {
         var currentControlProfile = parseInt($("#profilechange").val());
         var currentBatteryProfile = parseInt($("#batteryprofilechange").val());
 
@@ -1168,38 +1170,19 @@ helper.defaultsDialog = (function () {
         });
 
         //Save analytics
-        googleAnalytics.sendEvent('Setting', 'Defaults', selectedDefaultPreset.title); 
+        googleAnalytics.sendEvent('Setting', 'Defaults', selectedDefaultPreset.title);
+
+        let profileChainer = [MSPChainerClass(), MSPChainerClass(), MSPChainerClass()];
+        let profileChain = [[] ,[], []];
         
-        var settingsChainer = MSPChainerClass();
-        var chain = [];
+        let settingsChainer = MSPChainerClass();
+        let miscChain = [];
 
         miscSettings.forEach(input => {
-            chain.push(function (callback) {
+            miscChain.push(function (callback) {
                 mspHelper.setSetting(input.key, input.value, callback);
             });
         });
-
-        for (var i = 0; i < 3; i++ ) {
-            chain.push(function (callback) {
-                MSP.send_message(MSPCodes.MSP_SELECT_SETTING, [i], false, callback);
-            });
-            controlProfileSettings.forEach(input => {
-                chain.push(function (callback) {
-                    mspHelper.setSetting(input.key, input.value, callback);
-                });
-            });
-        }
-
-        for (var i = 0; i < 3; i++ ) {
-            chain.push(function (callback) {
-                MSP.send_message(MSPCodes.MSP2_INAV_SELECT_BATTERY_PROFILE, [i], false, callback);
-            });
-            batterySettings.forEach(input => {
-                chain.push(function (callback) {
-                    mspHelper.setSetting(input.key, input.value, callback);
-                });
-            });
-        }
         
         // Set Mixers
         if (selectedDefaultPreset.mixerToApply) {
@@ -1218,27 +1201,69 @@ helper.defaultsDialog = (function () {
             MOTOR_RULES.cleanup();
             MOTOR_RULES.inflate();
             
-            chain = chain.concat([
+            miscChain = miscChain.concat([
                 mspHelper.saveMixerConfig,
                 mspHelper.sendServoMixer,
                 mspHelper.sendMotorMixer
             ]);
         }
-            
-        chain.push(function (callback) {
+
+        // Set profiles
+
+        for (let ps = 0; ps < 3; ps++) {
+            profileChain[ps].push(function (callback) {
+                MSP.send_message(MSPCodes.MSP_SELECT_SETTING, [ps], false, callback);
+            });
+
+            profileChain[ps].push(function (callback) {
+                MSP.send_message(MSPCodes.MSP2_INAV_SELECT_BATTERY_PROFILE, [ps], false, callback);
+            });
+
+            controlProfileSettings.forEach(input => {
+                profileChain[ps].push(function (callback) {
+                    mspHelper.setSetting(input.key, input.value, callback);
+                });
+            }); 
+
+            batterySettings.forEach(input => {
+                profileChain[ps].push(function (callback) {
+                    mspHelper.setSetting(input.key, input.value, callback);
+                });
+            });
+        }
+
+        // Resetting profile at end of profile 3
+        profileChain[2].push(function (callback) {
             MSP.send_message(MSPCodes.MSP_SELECT_SETTING, [currentControlProfile], false, callback);
         });
             
-        chain.push(function (callback) {
+        profileChain[2].push(function (callback) {
             MSP.send_message(MSPCodes.MSP2_INAV_SELECT_BATTERY_PROFILE, [currentBatteryProfile], false, callback);
         });
-        
-        settingsChainer.setChain(chain);
+
+
+        for (let pc = 0; pc < 3; pc++) {
+            profileChainer[pc].setChain(profileChain[pc]);
+
+            if (pc < 2) {
+                profileChainer[pc].setExitPoint(function () {
+                    profileChainer[pc+1].execute();
+                });
+            }
+        }
+
+        processingDefaults = true;
+        settingsChainer.setChain(miscChain);
         settingsChainer.setExitPoint(function () {
+            updateActivatedTab();
+            profileChainer[0].execute();
+        });
+        settingsChainer.execute();
+
+        profileChainer[2].setExitPoint(function () {
+            updateActivatedTab();
             privateScope.finalize(selectedDefaultPreset);
         });
-        
-        settingsChainer.execute();        
     }
 
     privateScope.onPresetClick = function (event) {

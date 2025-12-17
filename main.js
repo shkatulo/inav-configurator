@@ -25,7 +25,7 @@ let globalSettings = {
     unitType: null,
     // Used to convert units within the UI
     osdUnits: null,
-    // Map  
+    // Map
     mapProviderType: null,
     mapApiKey: null,
     proxyURL: null,
@@ -44,7 +44,7 @@ $(document).ready(function () {
         if (!result.unit_type) {
             result.unit_type = UnitType.none;
         }
-        globalSettings.unitType = result.unit_type;        
+        globalSettings.unitType = result.unit_type;
     });
     chrome.storage.local.get('map_provider_type', function (result) {
         if (typeof result.map_provider_type === 'undefined') {
@@ -78,12 +78,20 @@ $(document).ready(function () {
         // Update CSS on to show highlighing or not
         updateProfilesHighlightColours();
     });
-	
+    chrome.storage.local.get('cli_autocomplete', function (result) {
+        if (typeof result.cli_autocomplete === 'undefined') {
+            result.cli_autocomplete = 1;
+        }
+        globalSettings.cliAutocomplete = result.cli_autocomplete;
+        CliAutoComplete.setEnabled(globalSettings.cliAutocomplete);
+    });
+
+
     // Resets the OSD units used by the unit coversion when the FC is disconnected.
     if (!CONFIGURATOR.connectionValid) {
         globalSettings.osdUnits = null;
     }
-    
+
     // alternative - window.navigator.appVersion.match(/Chrome\/([0-9.]*)/)[1];
     GUI.log(chrome.i18n.getMessage('getRunningOS') + GUI.operating_system + '</strong>, ' +
         'Chrome: <strong>' + window.navigator.appVersion.replace(/.*Chrome\/([0-9.]*).*/, "$1") + '</strong>, ' +
@@ -122,10 +130,14 @@ $(document).ready(function () {
         //Get saved size and position
         chrome.storage.local.get('windowSize', function (result) {
             if (result.windowSize) {
-                win.height = result.windowSize.height;
-                win.width = result.windowSize.width;
-                win.x = result.windowSize.x;
-                win.y = result.windowSize.y;
+                if (result.windowSize.height >= window.screen.availHeight && result.windowSize.width >= window.screen.availWidth) {
+                    win.maximize();
+                } else {
+                    win.height = result.windowSize.height;
+                    win.width = result.windowSize.width;
+                    win.x = Math.max(result.windowSize.x, window.screen.availLeft);
+                    win.y = Math.max(result.windowSize.y, window.screen.availTop);
+                }
             }
         });
 
@@ -164,7 +176,7 @@ $(document).ready(function () {
     var ui_tabs = $('#tabs > ul');
     $('a', ui_tabs).click(function () {
 
-        if ($(this).parent().hasClass("tab_help")) {            
+        if ($(this).parent().hasClass("tab_help")) {
             return;
         }
 
@@ -363,18 +375,28 @@ $(document).ready(function () {
                     updateProfilesHighlightColours();
 
                     // Horrible way to reload the tab
-                    const activeTab = $('#tabs li.active'); 
-                    activeTab.removeClass('active');  
-                    activeTab.find('a').click(); 
+                    const activeTab = $('#tabs li.active');
+                    activeTab.removeClass('active');
+                    activeTab.find('a').click();
                 });
+                $('div.cli_autocomplete input').change(function () {
+                    globalSettings.cliAutocomplete = $(this).is(':checked');
+                    chrome.storage.local.set({
+                        'cli_autocomplete': globalSettings.cliAutocomplete
+                    });
+
+                    CliAutoComplete.setEnabled($(this).is(':checked'));
+                });
+
 
                 $('#ui-unit-type').val(globalSettings.unitType);
                 $('#map-provider-type').val(globalSettings.mapProviderType);
                 $('#map-api-key').val(globalSettings.mapApiKey);
                 $('#proxyurl').val(globalSettings.proxyURL);
-                $('#proxylayer').val(globalSettings.proxyLayer);   
+                $('#proxylayer').val(globalSettings.proxyLayer);
                 $('#showProfileParameters').prop('checked', globalSettings.showProfileParameters);
-                
+                $('#cliAutocomplete').prop('checked', globalSettings.cliAutocomplete);
+
                 // Set the value of the unit type
                 // none, OSD, imperial, metric
                 $('#ui-unit-type').change(function () {
@@ -390,9 +412,9 @@ $(document).ready(function () {
                     }
 
                     // Horrible way to reload the tab
-                    const activeTab = $('#tabs li.active'); 
-                    activeTab.removeClass('active');  
-                    activeTab.find('a').click();            
+                    const activeTab = $('#tabs li.active');
+                    activeTab.removeClass('active');
+                    activeTab.find('a').click();
                 });
                 $('#map-provider-type').change(function () {
                     chrome.storage.local.set({
@@ -553,7 +575,7 @@ $(document).ready(function () {
     mixerprofile_e.change(function () {
         var mixerprofile = parseInt($(this).val());
         MSP.send_message(MSPCodes.MSP2_INAV_SELECT_MIXER_PROFILE, [mixerprofile], false, function () {
-            GUI.log(chrome.i18n.getMessage('loadedMixerProfile', [mixerprofile + 1]));
+            GUI.log(chrome.i18n.getMessage('setMixerProfile', [mixerprofile + 1]));
             MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false, function () {
                 GUI.log(chrome.i18n.getMessage('deviceRebooting'));
                 GUI.handleReconnect();
@@ -566,7 +588,7 @@ $(document).ready(function () {
     profile_e.change(function () {
         var profile = parseInt($(this).val());
         MSP.send_message(MSPCodes.MSP_SELECT_SETTING, [profile], false, function () {
-            GUI.log(chrome.i18n.getMessage('pidTuning_LoadedProfile', [profile + 1]));
+            GUI.log(chrome.i18n.getMessage('setControlProfile', [profile + 1]));
         });
     });
 
@@ -575,7 +597,7 @@ $(document).ready(function () {
     batteryprofile_e.change(function () {
         var batteryprofile = parseInt($(this).val());
         MSP.send_message(MSPCodes.MSP2_INAV_SELECT_BATTERY_PROFILE, [batteryprofile], false, function () {
-            GUI.log(chrome.i18n.getMessage('loadedBatteryProfile', [batteryprofile + 1]));
+            GUI.log(chrome.i18n.getMessage('setBatteryProfile', [batteryprofile + 1]));
         });
     });
 });
@@ -584,7 +606,7 @@ function get_osd_settings() {
     if (globalSettings.osdUnits !== undefined && globalSettings.osdUnits !==  null) {
         return;
     }
-    
+
     MSP.promise(MSPCodes.MSP2_INAV_OSD_PREFERENCES).then(function (resp) {
         var prefs = resp.data;
         prefs.readU8();
@@ -711,7 +733,7 @@ function updateFirmwareVersion() {
         });
     } else {
         $('#logo .firmware_version').text(chrome.i18n.getMessage('fcNotConnected'));
-        
+
         globalSettings.docsTreeLocation = 'https://github.com/iNavFlight/inav/blob/master/docs/';
     }
 }

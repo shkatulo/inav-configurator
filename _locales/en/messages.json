@@ -14,6 +14,9 @@
     "options_showProfileParameters": {
         "message": "Highlight parameters that change when switching battery or control profiles"
     },
+    "options_cliAutocomplete": {
+        "message": "Advanced CLI AutoComplete"
+    },
     "options_unit_type": {
         "message": "Set how the units render on the configurator only"
     },
@@ -847,7 +850,7 @@
         "message": "External PWM servo driver"
     },
     "featurePWM_SERVO_DRIVERTip": {
-        "message": "Use external PCA9685 PMW driver to connect up to 16 servos to flight controller. PCA9685 has to be connected to enable this feature."
+        "message": "Use external PCA9685 PWM driver to connect up to 16 servos to flight controller. PCA9685 has to be connected to enable this feature."
     },
     "featureRSSI_ADCTip": {
         "message": "RSSI is a measurement of signal strength and is very handy so you know when your aircraft is going out of range or if it is suffering RF interference."
@@ -1593,6 +1596,15 @@
     "loadedBatteryProfile": {
         "message": "Loaded Battery Profile: <strong style=\"color: #37a8db\">$1</strong>"
     },
+    "setControlProfile" : {
+        "message": "Set Control Profile: <strong style=\"color: #37a8db\">$1</strong>"
+    },
+    "setMixerProfile": {
+        "message": "Setting Mixer Profile: <strong style=\"color: #37a8db\">$1</strong>"
+    },
+    "setBatteryProfile": {
+        "message": "Setting Battery Profile: <strong style=\"color: #37a8db\">$1</strong>"
+    },
     "pidTuningDataRefreshed": {
         "message": "PID data <strong>refreshed</strong>"
     },
@@ -2159,7 +2171,7 @@
         "message": "Save Settings"
     },
     "cliMscBtn": {
-        "message": "MSC"
+        "message": "Blackbox (MSC)"
     },
     "cliDiffAllBtn": {
         "message": "Diff All"
@@ -2576,7 +2588,7 @@
         "message": "Set this option if you need an alternate failsafe behavior when the craft is close to Home. For example the author of the feature has a plane that failsafes when the wings detach on landing, when the RTH failsafe behavior normally desired in flight is no longer wanted or needed."
     },
     "failsafeMinDistanceItem": {
-        "message": "Failsafe Minimum Distance in centimeters"
+        "message": "Failsafe Minimum Distance"
     },
     "failsafeMinDistanceHelp": {
         "message": "The craft will use the alternate failsafe behavior when it is between 0 and this minimum distance in centimeters away from Home. For example if set to 2000 centimeters (20 meters), and the craft is at 13 meters, the Failsafe Minimum Distance Procedure will be followed. When the craft is at 25 meters, the normal failsafe procedure will be followed. If set to 0, the normal failsafe procedure will be used at all times. "
@@ -2990,8 +3002,8 @@
     "posholdHoverThrottle": {
         "message": "Hover throttle"
     },
-    "posholdHoverMidThrottle": {
-        "message": "Use mid. throttle for ALTHOLD"
+    "navmcAltholdThrottle": {
+        "message": "Stick position for althold hover"
     },
     "mcWpSlowdown": {
         "message": "Slow down when approaching waypoint"
@@ -3368,6 +3380,54 @@
     "fixedWingNavigationConfiguration": {
         "message": "Fixed Wing Navigation Settings"
     },
+    "fixedWingLandingConfiguration": {
+        "message": "Fixed Wing Landing Settings"
+    },
+    "MissionPlannerOnlyOneLandWp": {
+        "message": "You can set only one LAND Waypoint per mission."
+    },
+    "fwLandApproachLength" : {
+        "message": "Final approach length"
+    },
+    "fwLandApproachLengthHelp": {
+        "message": "Length of the final approach, also includes the glide and intercept phase. This is the length from the safe home point to the final turn point."
+    },
+    "fwLandFinalApproachPitch2throttle": {
+        "message": "Modifier for pitch to throttle ratio at final approach"
+    },
+    "fwLandFinalApproachPitch2throttleHelp": {
+        "message": "This value is multiplied by the \"pitch to throttle ratio\" value during the final approach. Allows the velocity to be reduced."
+    },
+    "fwLandGlideAlt" : {
+        "message": "Initial altitude of the glide phase"
+    },
+    "fwLandGlideAltHelp" : {
+        "message": "At this altitude (measured from the altitude of the landing point) the engine is switched off and the aircraft glides from here."
+    },
+    "fwLandFlareAlt" : {
+        "message": "Initial altitude of the flare phase"
+    },
+    "fwLandFlareAltHelp" : {
+        "message": "At this altitude (measured from the altitude of the landing point) the last phase of landing is executed."
+    },
+    "fwLandGlidePitch" : {
+        "message": "Pitch value for glide phase"
+    },
+    "fwLandGlidePitchHelp" : {
+        "message": "This pitch angle is held during the glide phase."
+    },
+    "fwLandFlarePitch" : {
+        "message": "Pitch value for flare phase"
+    },
+    "fwLandFlarePitchHelp" : {
+        "message": "This pitch angle is held during the flare phase."
+    },
+    "fwLandMaxTailwind": {
+        "message": "Max. tailwind"
+    },
+    "fwLandMaxTailwindHelp": {
+        "message": "This value is used when no headwind landing is possible and wind speeds below this value are ignored (inaccuracies in INAV wind measurement)."
+    },
     "osd_unsupported_msg1": {
         "message": "Your flight controller isn't responding to OSD commands. This probably means that it does not have an integrated OSD."
     },
@@ -3451,6 +3511,12 @@
     },
     "osd_hud_settings": {
         "message": "Heads up Display settings"
+    },
+    "osd_custom_element_settings": {
+        "message": "Custom OSD elements"
+    },
+    "custom_element": {
+        "message": "Custom element"
     },
     "osd_hud_settings_HELP": {
         "message": "This section allows tweaking the behavior of HUD elements."
@@ -4298,8 +4364,8 @@
     "missionMultiAddNewMission": {
         "message": "Add New Mission"
     },
-    "missionLevelEarthDEMModel": {
-        "message": "Use Sea Level Earth DEM Model: "
+    "missionEllipsoidEarthDEMModel": {
+        "message": "Use Ellipsoid instead of SL DEM: "
     },
     "SafehomeLegend": {
         "message": "Legend : "
@@ -4309,6 +4375,12 @@
     },
     "SafehomeSafeRadius": {
         "message": "Safe Radius (m):"
+    },
+    "SafehomeFwAppraoch": {
+        "message": "FW Approach:"
+    },
+    "safehomeEdit": {
+        "message": "Edit Safehome"
     },
     "missionTitleHide": {
         "message": "Hide"
@@ -4340,6 +4412,9 @@
     "missionTitleSaveEepromMission": {
         "message": "Save Eeprom mission"
     },
+    "missionTitleDelete": {
+        "message": "Delete"
+    },
     "missionTitleRemoveAll": {
         "message": "Remove all"
     },
@@ -4351,7 +4426,7 @@
     },
     "missionTitleAdd": {
         "message": "Add"
-    },
+    }, 
     "missionTitleMoveToCenterView": {
         "message": "move to center view"
     },
@@ -4363,6 +4438,60 @@
     },
     "missionTitlEditMission": {
         "message": "Edit Mission"
+    },
+    "MissionPlannerFwLAndingAltitudeChangeReset": {
+        "message": "Altitude below min land altitude. Change ignored" 
+    },
+    "missionWpType": {
+        "message": "Type:"
+    },
+    "missionWpLat": {
+        "message": "Lat:"
+    },
+    "missionWpLon": {
+        "message": "Lon:"
+    },
+    "missionSeaLevelRef": {
+        "message": "Sea level Ref: "
+    },
+    "missionElevation": {
+        "message": "Elevation (m):"
+    },
+    "missionNA": {
+        "message": "N/A"
+    },
+    "missionGroundDist": {
+        "message": "Grd Dist (m):"
+    },
+    "missionParameter1": {
+        "message": "Parameter 1:"
+    },
+    "missionParameter2": {
+        "message": "Parameter 2:"
+    },
+    "missionUserActions": {
+        "message": "User Actions:"
+    },
+    "missionFwLandingSettings": {
+        "message": "Fixed Wing landing settings:"
+    },
+    "missionFwApproachAlt": {
+        "message": "Approach Alt: (cm):"
+    },
+    "missionFwLandAlt": {
+        "message": "Land Alt: (cm):"
+    },
+    "missionFwApproachDir": {
+        "message": "Approach direction:"
+    },
+    "missionFwLandHeading1": {
+        "message": "Heading 1: (deg):"
+    },
+    "missionFwLandHeading2": {
+        "message": "Heading 2: (deg):"
+    },
+    "missionExclusive": {
+        "message": "Excl."
     },
     "missionRTHsettingsTitle": {
         "message": "RTH settings"
@@ -4378,6 +4507,12 @@
     },
     "missionSafehomeHead": {
         "message": "Safe Home manager"
+    },
+    "missionSafehomeAvailableSafehomes" : {
+        "message": "Available Safehomes:"
+    },
+    "missionSafehomeMaxSafehomesReached": {
+        "message": "Maximum number of safehomes reached."
     },
     "missionMultiMissionHead": {
         "message": "Multi Missions"
@@ -4893,10 +5028,10 @@
         "message": "Illegal state. Restart required."
     },
     "motor_direction_inverted": {
-        "message": "Normal motor direction / Props In configuration"
+        "message": "Normal motor direction / Props-in configuration"
     },
     "motor_direction_isInverted": {
-        "message": "Reversed motor direction / Props Out configuration"
+        "message": "Reversed motor direction / Props-out configuration"
     },
     "motor_direction_inverted_hint": {
         "message": "Enable if the motor direction is reversed and the props are mounted in the opposite direction."
