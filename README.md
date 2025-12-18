@@ -122,6 +122,11 @@ To build a specific release, use the command `release --platform="win64"` for ex
 Working Mac example:
 `node ./node_modules/gulp/bin/gulp.js release --platform="osx64"`
 
+If build error happens (end of central directory record signature not found):
+1. Download nw archive from https://dl.nwjs.io/v0.61.0/
+2. Extract it to .\cache\0.61.0-normal\win64\nwjs-normal-v0.61.0-win-x64
+3. Build again
+
 ### Running with debug | Inspector
 
 To be able to open Inspector, you will need SDK flavours of NW.js
